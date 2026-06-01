@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>RAM C | آی‌پی من چیست؟</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', 'Segoe UI', 'Vazir', system-ui, sans-serif;
+        }
+
+        body {
+            background: #fffef7;
+            padding: 2rem 1.2rem;
+            color: #2d3e50;
+        }
+
+        .card {
+            background: #ffffff;
+            border-radius: 1.75rem;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.02), 0 2px 6px rgba(255,200,100,0.1);
+            border: 1px solid #fff0d6;
+            overflow: hidden;
+        }
+
+        .btn {
+            background: #fffcf5;
+            border: 1px solid #ffe2b5;
+            padding: 0.6rem 1.2rem;
+            border-radius: 2rem;
+            font-weight: 500;
+            font-size: 0.85rem;
+            cursor: pointer;
+            color: #b97f2e;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: #f9e0a0;
+            border: none;
+            color: #784a0e;
+            box-shadow: 0 2px 4px rgba(249,200,100,0.2);
+        }
+
+        .btn-primary:hover {
+            background: #f7d97e;
+            transform: translateY(-1px);
+        }
+
+        .ip-box {
+            background: #fefcf7;
+            border-radius: 1.25rem;
+            padding: 1.5rem;
+            text-align: center;
+            border: 1px solid #fff0e0;
+            margin-bottom: 1.5rem;
+        }
+
+        .ip-label {
+            font-size: 0.75rem;
+            color: #b97f2e;
+            letter-spacing: 0.05em;
+        }
+
+        .ip-display {
+            font-family: monospace;
+            font-size: 2rem;
+            font-weight: 800;
+            color: #c8821f;
+            direction: ltr;
+            word-break: break-all;
+            margin: 0.5rem 0;
+        }
+
+        .copy-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            background: #fffcf5;
+            border: 1px solid #ffe2b5;
+            padding: 0.4rem 1rem;
+            border-radius: 2rem;
+            font-size: 0.75rem;
+            cursor: pointer;
+            color: #b97f2e;
+        }
+
+        .copy-btn.copied {
+            background: #e6f4e8;
+            border-color: #a3d8a3;
+            color: #2e7d32;
+        }
+
+        .info-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            justify-content: center;
+            margin: 1.5rem 0;
+        }
+
+        .info-card {
+            background: #fefcf7;
+            border: 1px solid #fff0df;
+            border-radius: 1rem;
+            padding: 1rem 0.75rem;
+            text-align: center;
+            flex: 1;
+            min-width: 110px;
+        }
+
+        .info-card.disabled {
+            opacity: 0.6;
+            border-style: dashed;
+        }
+
+        .info-icon {
+            width: 28px;
+            height: 28px;
+            margin: 0 auto 0.5rem;
+            color: #e5a12e;
+        }
+
+        .info-label {
+            font-size: 0.7rem;
+            color: #7f8c8d;
+            margin-bottom: 0.25rem;
+        }
+
+        .info-value {
+            font-weight: 700;
+            font-size: 0.85rem;
+            color: #2d3e50;
+        }
+
+        .geo-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            width: 100%;
+            padding: 0.75rem;
+            background: #f9e0a0;
+            border: none;
+            border-radius: 2rem;
+            font-weight: 700;
+            cursor: pointer;
+            color: #784a0e;
+        }
+
+        .geo-btn:disabled {
+            opacity: 0.6;
+            cursor: wait;
+        }
+
+        .map-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            margin-top: 1rem;
+            color: #e5a12e;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-box {
+            background: white;
+            border-radius: 1.5rem;
+            padding: 1.5rem;
+            max-width: 350px;
+            text-align: center;
+            border: 1px solid #fff0d6;
+        }
+
+        .modal-box h3 {
+            color: #c8821f;
+            margin-bottom: 0.75rem;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 0.75rem;
+            justify-content: center;
+            margin-top: 1rem;
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            border: 2px solid #ffe2b5;
+            border-top-color: #e5a12e;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 1.5rem;
+            font-size: 0.7rem;
+            color: #bfae95;
+            border-top: 1px solid #fff0e2;
+            padding-top: 1rem;
+        }
+
+        h1 {
+            font-weight: 700;
+            color: #c8821f;
+        }
+
+        @media (max-width: 480px) {
+            .ip-display {
+                font-size: 1.3rem;
+            }
+            .info-card {
+                min-width: calc(50% - 0.5rem);
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="card" style="padding: 1.8rem 1.5rem;">
+    <div style="display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; margin-bottom: 1.2rem;">
+        <div>
+            <h1>RAM I</h1>
+            <span style="font-size:0.7rem; color:#cc9a5c;">RAMTIN IP · نمایش آی‌پی و موقعیت</span>
+        </div>
+        <div>
+            <a href="https://github.com/ramtinhossinbiki" target="_blank" style="text-decoration: none;">
+                <button class="btn" style="background:#f5f0e8;">🐙 گیت‌هاب</button>
+            </a>
+        </div>
+    </div>
+
+    <div class="ip-box">
+        <div class="ip-label">آدرس IP شما</div>
+        <div class="ip-display" id="ipAddress">در حال دریافت...</div>
+        <button id="copyBtn" class="copy-btn">📋 کپی</button>
+    </div>
+
+    <div class="info-grid">
+        <div class="info-card disabled" id="card-country">
+            <div class="info-icon">🌍</div>
+            <div class="info-label">کشور</div>
+            <div class="info-value" id="country">—</div>
+        </div>
+        <div class="info-card disabled" id="card-city">
+            <div class="info-icon">🏙️</div>
+            <div class="info-label">شهر</div>
+            <div class="info-value" id="city">—</div>
+        </div>
+        <div class="info-card disabled" id="card-region">
+            <div class="info-icon">📍</div>
+            <div class="info-label">منطقه</div>
+            <div class="info-value" id="region">—</div>
+        </div>
+        <div class="info-card disabled" id="card-isp">
+            <div class="info-icon">📡</div>
+            <div class="info-label">ارائه‌دهنده</div>
+            <div class="info-value" id="isp">—</div>
+        </div>
+        <div class="info-card disabled" id="card-timezone">
+            <div class="info-icon">🕒</div>
+            <div class="info-label">منطقه زمانی</div>
+            <div class="info-value" id="timezone">—</div>
+        </div>
+    </div>
+
+    <div style="text-align: center;">
+        <button id="geoBtn" class="geo-btn">📍 نمایش موقعیت مکانی</button>
+        <div id="mapLinkContainer" style="margin-top: 0.8rem;"></div>
+    </div>
+
+    <footer>🔒 آی‌پی فقط برای نمایش خوانده می‌شود · اطلاعات مکانی با تأیید شما دریافت می‌گردد · هیچ داده‌ای ذخیره نمی‌شود</footer>
+</div>
+
+<div id="confirmModal" class="modal">
+    <div class="modal-box">
+        <h3>نمایش موقعیت مکانی</h3>
+        <p>برای نمایش موقعیت مکانی، آدرس IP شما به سرور خارجی ارسال می‌شود. آیا موافقید؟</p>
+        <div class="modal-buttons">
+            <button id="confirmYes" class="btn btn-primary">بله، موافقم</button>
+            <button id="confirmNo" class="btn">انصراف</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // دریافت آی‌پی از API عمومی
+    async function fetchIP() {
+        try {
+            const response = await fetch('https://api.ipify.org?format=json');
+            const data = await response.json();
+            return data.ip;
+        } catch (err) {
+            console.error('IP fetch error:', err);
+            return 'خطا در دریافت آی‌پی';
+        }
+    }
+
+    // نمایش آی‌پی در صفحه
+    async function displayIP() {
+        const ipElement = document.getElementById('ipAddress');
+        ipElement.textContent = 'در حال دریافت...';
+        const ip = await fetchIP();
+        ipElement.textContent = ip;
+        window.currentIP = ip;
+    }
+
+    // کپی به کلیپ‌بورد
+    const copyBtn = document.getElementById('copyBtn');
+    copyBtn.addEventListener('click', async () => {
+        if (!window.currentIP) return;
+        try {
+            await navigator.clipboard.writeText(window.currentIP);
+            copyBtn.classList.add('copied');
+            copyBtn.innerHTML = '✅ کپی شد!';
+            setTimeout(() => {
+                copyBtn.classList.remove('copied');
+                copyBtn.innerHTML = '📋 کپی';
+            }, 2000);
+        } catch (err) {
+            alert('کپی خودکار انجام نشد، لطفاً دستی کپی کنید.');
+        }
+    });
+
+    // مدال تأیید
+    const modal = document.getElementById('confirmModal');
+    const confirmYes = document.getElementById('confirmYes');
+    const confirmNo = document.getElementById('confirmNo');
+    const geoBtn = document.getElementById('geoBtn');
+    let geoInProgress = false;
+
+    function showModal() {
+        modal.classList.add('show');
+    }
+
+    function hideModal() {
+        modal.classList.remove('show');
+    }
+
+    // نمایش داده‌های موقعیت
+    function displayGeoData(data) {
+        const disabledCards = document.querySelectorAll('.info-card.disabled');
+        disabledCards.forEach(card => card.classList.remove('disabled'));
+
+        document.getElementById('country').textContent = data.country || 'نامشخص';
+        document.getElementById('city').textContent = data.city || 'نامشخص';
+        document.getElementById('region').textContent = data.region || 'نامشخص';
+        document.getElementById('isp').textContent = data.connection?.isp || data.connection?.org || 'نامشخص';
+        document.getElementById('timezone').textContent = data.timezone?.id || 'نامشخص';
+
+        const mapContainer = document.getElementById('mapLinkContainer');
+        if (data.latitude && data.longitude) {
+            mapContainer.innerHTML = `<a href="https://www.google.com/maps?q=${data.latitude},${data.longitude}" target="_blank" class="map-link">🗺️ مشاهده روی نقشه</a>`;
+        } else {
+            mapContainer.innerHTML = '';
+        }
+    }
+
+    // دریافت موقعیت از API (با fallback)
+    async function fetchGeoLocation() {
+        geoBtn.disabled = true;
+        geoBtn.innerHTML = `<span class="loading-spinner"></span> در حال دریافت...`;
+
+        try {
+            // تلاش اول با ipwho.is
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 8000);
+            const response = await fetch('https://ipwho.is/', { signal: controller.signal });
+            clearTimeout(timeoutId);
+            if (!response.ok) throw new Error('API error');
+            const data = await response.json();
+            if (data.success) {
+                displayGeoData(data);
+                return;
+            }
+            throw new Error('invalid response');
+        } catch (err) {
+            // fallback: ipapi.co
+            try {
+                const fallbackRes = await fetch('https://ipapi.co/json/');
+                if (!fallbackRes.ok) throw new Error();
+                const fallbackData = await fallbackRes.json();
+                if (fallbackData.latitude) {
+                    const normalized = {
+                        country: fallbackData.country_name,
+                        city: fallbackData.city,
+                        region: fallbackData.region,
+                        connection: { isp: fallbackData.org },
+                        timezone: { id: fallbackData.timezone },
+                        latitude: fallbackData.latitude,
+                        longitude: fallbackData.longitude
+                    };
+                    displayGeoData(normalized);
+                    return;
+                }
+                throw new Error();
+            } catch (fallbackErr) {
+                alert('امکان دریافت موقعیت مکانی وجود ندارد. اتصال اینترنت خود را بررسی کنید.');
+            }
+        } finally {
+            geoBtn.disabled = false;
+            geoBtn.innerHTML = '📍 نمایش موقعیت مکانی';
+        }
+    }
+
+    confirmYes.addEventListener('click', () => {
+        hideModal();
+        fetchGeoLocation();
+    });
+
+    confirmNo.addEventListener('click', () => {
+        hideModal();
+    });
+
+    geoBtn.addEventListener('click', () => {
+        if (geoInProgress) return;
+        showModal();
+    });
+
+    // بارگذاری اولیه
+    displayIP();
+</script>
+</body>
+</html>
